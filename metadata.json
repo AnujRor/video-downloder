@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Remix: Universal Video Downloader",
+  "description": "Download videos from YouTube and Instagram using just the link.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
