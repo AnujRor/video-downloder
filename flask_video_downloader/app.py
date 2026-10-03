@@ -1,13 +1,10 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
 import yt_dlp
 import traceback
 import sys
+import os
 
 app = Flask(__name__)
-
-@app.route('/')
-def index():
-    return render_template('index.html')
 
 @app.route('/api/get-video', methods=['POST'])
 def get_video():
@@ -17,7 +14,7 @@ def get_video():
     if not url:
         return jsonify({"error": "URL is required"}), 400
 
-    # Advanced yt-dlp configuration to bypass basic blocks
+    # yt-dlp config for serverless environment
     ydl_opts = {
         'format': 'best',
         'skip_download': True,
@@ -25,35 +22,30 @@ def get_video():
         'quiet': True,
         'no_warnings': True,
         'extract_flat': False,
-        # Common user agent to mimic a real browser
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
             'Sec-Fetch-Mode': 'navigate',
         },
-        # Specifically targeting YouTube Android clients can sometimes bypass web blocks
         'extractor_args': {
             'youtube': {
                 'player_client': ['android'],
             }
-        }
+        },
     }
 
     try:
-        print(f"[*] Processing URL: {url}")
+        print(f"[*] Processing URL: {url}", file=sys.stderr)
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
             
             title = info.get('title', 'Unknown Title')
             thumbnail = info.get('thumbnail', '')
             
-            # Find the best direct URL
             download_url = info.get('url')
             
-            # If the direct URL isn't top-level (sometimes happens with specific formats), check formats
             if not download_url and 'formats' in info:
-                # Filter out manifests, select formats with video and audio
                 valid_formats = [
                     f for f in info['formats'] 
                     if f.get('url') and 'manifest' not in f.get('url', '')
@@ -61,10 +53,8 @@ def get_video():
                     and f.get('acodec') != 'none'
                 ]
                 if valid_formats:
-                    # best quality is usually at the end of the list
                     download_url = valid_formats[-1].get('url')
                 else:
-                    # Fallback to any valid URL
                     valid_formats = [f for f in info['formats'] if f.get('url')]
                     if valid_formats:
                         download_url = valid_formats[-1].get('url')
@@ -79,11 +69,9 @@ def get_video():
             })
             
     except yt_dlp.utils.DownloadError as e:
-        # Print the exact error to the terminal for debugging
         error_msg = str(e)
         print(f"[!] yt-dlp Download Error:\n{error_msg}", file=sys.stderr)
         
-        # Craft a user-friendly message based on the exception
         user_message = "Failed to process the link."
         
         if "Sign in to confirm" in error_msg or "bot" in error_msg.lower():
@@ -103,6 +91,10 @@ def get_video():
         print(f"[!] Unexpected Error:\n{traceback.format_exc()}", file=sys.stderr)
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({"status": "ok"})
+
+# Vercel expects the app to be importable
 if __name__ == '__main__':
-    # Run the Flask app on port 5000
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
