@@ -9,7 +9,7 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/get-video', methods=['POST'])
+@app.route('/api/get-video', methods=['POST'])
 def get_video():
     data = request.get_json()
     url = data.get('url')

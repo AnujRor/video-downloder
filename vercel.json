@@ -5,13 +5,6 @@
       "root": ".",
       "framework": "vite"
     },
-    "express-api": {
-      "root": ".",
-      "framework": "node",
-      "entrypoint": "server.ts",
-      "installCommand": "npm install",
-      "buildCommand": "npm run build"
-    },
     "flask-api": {
       "root": "flask_video_downloader",
       "framework": "flask",
@@ -21,12 +14,6 @@
   "rewrites": [
     {
       "source": "/api/get-video",
-      "destination": {
-        "service": "express-api"
-      }
-    },
-    {
-      "source": "/api/flask/(.*)",
       "destination": {
         "service": "flask-api"
       }
