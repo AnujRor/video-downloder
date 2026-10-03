@@ -25,7 +25,6 @@
     "btch-downloader": "^6.0.37",
     "dotenv": "^17.2.3",
     "express": "^4.22.2",
-    "igdl.js": "^1.0.0",
     "igdown-scrapper": "^2.0.0",
     "instagram-url-direct": "^2.0.7",
     "instagram-url-downloader": "^1.1.0",
