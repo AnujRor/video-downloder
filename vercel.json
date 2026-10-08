@@ -8,12 +8,23 @@
     "flask-api": {
       "root": "flask_video_downloader",
       "framework": "flask",
-      "installCommand": "pip install -r requirements.txt"
+      "installCommand": "pip install -r requirements.txt",
+      "functions": {
+        "app.py": {
+          "maxDuration": 60
+        }
+      }
     }
   },
   "rewrites": [
     {
       "source": "/api/get-video",
+      "destination": {
+        "service": "flask-api"
+      }
+    },
+    {
+      "source": "/health",
       "destination": {
         "service": "flask-api"
       }
