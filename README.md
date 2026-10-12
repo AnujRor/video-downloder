@@ -1,33 +1,29 @@
 # Universal Video Downloader
 
-A web app that extracts direct download links for videos from YouTube, Instagram, and other supported sites using just a link.
+A web app that turns a video link into a direct download link. Paste a video URL and download the video from YouTube, Instagram, and other supported sites.
 
-## Features
+## What It Does
 
-- Paste a video URL and get a direct download link
+- Takes a video link as input and returns a direct download link
 - Supports YouTube, Instagram, and other yt-dlp compatible sites
-- Shows video title and thumbnail before download
-- Automatic quality fallback (1080p → 720p → 360p) for YouTube
-- Built-in fallback links when the server IP is blocked by the platform
-- Simple, responsive UI with a "How to save to Gallery" guide for mobile users
+- Shows the video title and thumbnail before downloading
+- Tries different video qualities automatically for YouTube (1080p, then 720p, then 360p)
+- Offers an alternative download option when a platform blocks the server
+- Includes a simple guide for saving the video to the phone gallery
 
-## Tech Stack
+## How It Is Built
 
 **Frontend**
-- React 19
-- Vite
-- TypeScript
-- Tailwind CSS
-- lucide-react (icons)
+- React with TypeScript
+- Vite as the build tool
+- Tailwind CSS for styling
+- lucide-react for icons
 
-**Backend (Node)**
-- Express
-- youtube-dl-exec / yt-dlp
-- @vreden/youtube_scraper (YouTube scraper that bypasses some blocks)
-
-**Backend (Python / Flask)**
-- Flask
-- yt-dlp
+**Backend**
+- Node.js with Express for the API
+- yt-dlp (through youtube-dl-exec) to extract video links
+- A YouTube scraper library to bypass some platform blocks
+- A Flask + yt-dlp backend as an alternative service
 
 ## Project Structure
 
@@ -35,112 +31,30 @@ A web app that extracts direct download links for videos from YouTube, Instagram
 video-downloder/
 │
 ├── src/
-│   ├── App.tsx            # Main React UI
+│   ├── App.tsx            # Main user interface
 │   ├── main.tsx           # React entry point
-│   └── index.css          # Tailwind styles
+│   └── index.css          # Styles
 │
-├── server.ts              # Node/Express backend API
-├── index.html             # HTML entry point
-├── vite.config.ts         # Vite configuration
-├── vercel.json            # Deployment config (frontend + Flask API)
+├── server.ts              # Node/Express backend
+├── index.html             # Page entry point
+├── vite.config.ts         # Build configuration
+├── vercel.json            # Deployment configuration
 ├── metadata.json          # App metadata
 │
 └── flask_video_downloader/
     ├── app.py             # Flask backend using yt-dlp
     ├── requirements.txt   # Python dependencies
-    └── templates/         # Flask frontend template
+    └── templates/         # Flask page template
 ```
 
 ## How It Works
 
-1. The user pastes a video link in the frontend.
-2. The frontend sends the link to the `/api/get-video` endpoint.
-3. The backend extracts the video info (title, thumbnail, direct URL) using yt-dlp or a YouTube scraper.
-4. The frontend displays the title, thumbnail, and a download button.
-5. If the platform blocks the server (common on cloud IPs), the app provides an alternative download link.
+1. The user pastes a video link in the interface.
+2. The app sends the link to its backend.
+3. The backend extracts the video title, thumbnail, and direct download link.
+4. The app shows the result with a download button.
+5. If the platform blocks the server, the app provides another way to download.
 
-## API Endpoints
+## Note
 
-### `POST /api/get-video`
-
-Request body:
-
-```json
-{ "url": "https://youtube.com/watch?v=..." }
-```
-
-Response:
-
-```json
-{
-  "title": "Video title",
-  "thumbnail": "https://...",
-  "downloadUrl": "https://..."
-}
-```
-
-### `GET /health` (Flask backend)
-
-Returns the service health status.
-
-## Running Locally
-
-### Frontend + Node Backend
-
-1. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-2. Start the dev server:
-
-   ```bash
-   npm run dev
-   ```
-
-3. Build for production:
-
-   ```bash
-   npm run build
-   ```
-
-### Flask Backend (Optional)
-
-1. Navigate to the Flask folder:
-
-   ```bash
-   cd flask_video_downloader
-   ```
-
-2. Create and activate a virtual environment:
-
-   ```bash
-   python -m venv venv
-   # Windows
-   venv\Scripts\activate
-   # Mac/Linux
-   source venv/bin/activate
-   ```
-
-3. Install dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Run the app:
-
-   ```bash
-   python app.py
-   ```
-
-5. Open [http://127.0.0.1:5000](http://127.0.0.1:5000).
-
-## Important Note
-
-Cloud servers (AWS, GCP, Vercel, etc.) are aggressively blocked by YouTube and Instagram. Running this app **locally on your own machine** (using your residential IP) gives the best results. If a platform still requests cookies, yt-dlp can be configured to use your browser cookies.
-
-## License
-
-Apache-2.0
+Cloud servers are often blocked by YouTube and Instagram, so running the app locally on a personal machine works best.
