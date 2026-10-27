@@ -47,11 +47,27 @@ export default function App() {
              fallbackUrl = `https://snapinsta.app/`;
           } else if (isYt) {
              fallbackUrl = `https://loader.to/api/button/?url=${encodeURIComponent(url)}&f=1080`;
+          } else if (url.includes('tiktok.com')) {
+             fallbackUrl = `https://ssstik.io/`;
+          } else if (url.includes('facebook.com') || url.includes('fb.watch')) {
+             fallbackUrl = `https://fdown.net/`;
+          } else if (url.includes('twitter.com') || url.includes('x.com')) {
+             fallbackUrl = `https://savetweetvid.com/`;
+          } else {
+             fallbackUrl = `https://cobalt.tools/`;
           }
 
           if (fallbackUrl) {
+            const getTitle = () => {
+              if (isInsta) return "Instagram Download Ready";
+              if (isYt) return "YouTube Download Ready";
+              if (url.includes('tiktok.com')) return "TikTok Download Ready";
+              if (url.includes('facebook.com') || url.includes('fb.watch')) return "Facebook Download Ready";
+              if (url.includes('twitter.com') || url.includes('x.com')) return "X Download Ready";
+              return "Video Download Ready";
+            };
             setVideoInfo({
-              title: isInsta ? "Instagram Download Ready" : "Video Download Ready",
+              title: getTitle(),
               thumbnail: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=300&auto=format&fit=crop", // placeholder thumbnail
               downloadUrl: fallbackUrl,
               isFallback: true
@@ -82,7 +98,7 @@ export default function App() {
             Universal Video Downloader
           </h1>
           <p className="text-indigo-100">
-            Download videos from YouTube, Instagram, and more using just the link.
+            Download videos from YouTube, Instagram, TikTok, Facebook, X and more using just the link.
           </p>
         </div>
 
@@ -98,7 +114,7 @@ export default function App() {
                 type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="Paste video link here (e.g., https://youtube.com/watch?v=...)"
+                placeholder="Paste any video link here (YouTube, Instagram, TikTok, Facebook, X, etc.)"
                 className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors text-gray-900 placeholder-gray-400"
                 required
               />
@@ -150,7 +166,7 @@ export default function App() {
                 
                 {videoInfo.isFallback && !videoInfo.downloadUrl.includes('loader.to') && (
                   <p className="text-sm text-emerald-700 mb-4 bg-emerald-50 p-3 rounded-lg border border-emerald-100">
-                    Click the button below to continue and download your video.
+                    Click the button below to continue and download your video from the external site.
                   </p>
                 )}
                 
